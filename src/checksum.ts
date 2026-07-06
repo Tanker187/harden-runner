@@ -4,15 +4,15 @@ import * as fs from "fs";
 
 export const CHECKSUMS = {
   tls: {
-    amd64: "713c91e921292027dacf446db44bafbc8e36a3f7f51dff664ba681c6e4398a05", // v1.8.2
-    arm64: "2c1eb365d6d9ae4cd4b6632a5f833bcdb7e75d0d9604de3391ff22e4e28e8d42",
+    amd64: "d58a9c1c5245155ce4c71507a61e213a29925a7c39c0d20bfd00bef0d281bdbb", // v1.8.6
+    arm64: "084fa95e74d17321dd1c37c93abeb8577e53ddf5266410e19f52aa79a02ae33e",
   },
   non_tls: {
     amd64: "e38de61e1afd98dd339bb9acce4996183875d482be1638fb198ab02b3e25bbef", // v0.16.0
   },
   bravo: {
-    amd64: "8d002af0c1c4bb73eaef0f2b641f7aa353cc3f4da36a4e418b69895a2baa922c", // v1.8.2
-    arm64: "1ce74a30d704c2e994246fc809d65af83e3f354aae7b9080b2c2eaee715cf005",
+    amd64: "495f607a891d89f12214849301f247bdca565afe67deb170fe7e5d6d361852ca", // v1.8.6
+    arm64: "f96f66ab946097aae1fc887e12fe1cefcc5d510bce179221c7185374e4adf538",
   },
   darwin: "fe26a1f6af4afe9f1a854d8633832f5d18ab542827003cae445b3a64021d612c", // v0.0.5
   windows: {

@@ -66,6 +66,11 @@ interface MonitorResponse {
       return;
     }
 
+    if (isGithubHosted() && process.platform === "linux" && !process.env.USER) {
+      console.log(common.UBUNTU_SLIM_MESSAGE);
+      return;
+    }
+
     var correlation_id = uuidv4();
     var api_url = STEPSECURITY_API_URL;
     var web_url = STEPSECURITY_WEB_URL;
@@ -102,7 +107,10 @@ interface MonitorResponse {
     if (confg.use_policy_store) {
       console.log(`Fetching policy from policy store`);
       if (confg.api_key === "") {
-        core.setFailed("api-key is required when use-policy-store is set to true");
+        core.warning(
+          "api-key is not set while use-policy-store is true. Defaulting to audit mode."
+        );
+        confg.egress_policy = "audit";
       } else {
         try {
           const repoName = (process.env["GITHUB_REPOSITORY"] || "").split("/")[1] || "";

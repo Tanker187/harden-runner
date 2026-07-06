@@ -85171,6 +85171,7 @@ const HARDEN_RUNNER_UNAVAILABLE_MESSAGE = "Sorry, we are currently experiencing 
 const ARC_RUNNER_MESSAGE = "Workflow is currently being executed in ARC based runner.";
 const ARM64_RUNNER_MESSAGE = "ARM runners are not supported in the Harden-Runner community tier.";
 const ARM64_WINDOWS_RUNNER_MESSAGE = "Windows ARM runners are not yet supported by Harden-Runner.";
+const UBUNTU_SLIM_MESSAGE = "This job is running on an ubuntu-slim runner. Harden Runner is not supported on ubuntu-slim runners. This job will not be monitored.";
 
 ;// CONCATENATED MODULE: external "node:fs"
 const external_node_fs_namespaceObject = require("node:fs");
@@ -85455,15 +85456,15 @@ var external_crypto_ = __nccwpck_require__(6982);
 
 const CHECKSUMS = {
     tls: {
-        amd64: "713c91e921292027dacf446db44bafbc8e36a3f7f51dff664ba681c6e4398a05",
-        arm64: "2c1eb365d6d9ae4cd4b6632a5f833bcdb7e75d0d9604de3391ff22e4e28e8d42",
+        amd64: "d58a9c1c5245155ce4c71507a61e213a29925a7c39c0d20bfd00bef0d281bdbb",
+        arm64: "084fa95e74d17321dd1c37c93abeb8577e53ddf5266410e19f52aa79a02ae33e",
     },
     non_tls: {
         amd64: "e38de61e1afd98dd339bb9acce4996183875d482be1638fb198ab02b3e25bbef", // v0.16.0
     },
     bravo: {
-        amd64: "8d002af0c1c4bb73eaef0f2b641f7aa353cc3f4da36a4e418b69895a2baa922c",
-        arm64: "1ce74a30d704c2e994246fc809d65af83e3f354aae7b9080b2c2eaee715cf005",
+        amd64: "495f607a891d89f12214849301f247bdca565afe67deb170fe7e5d6d361852ca",
+        arm64: "f96f66ab946097aae1fc887e12fe1cefcc5d510bce179221c7185374e4adf538",
     },
     darwin: "fe26a1f6af4afe9f1a854d8633832f5d18ab542827003cae445b3a64021d612c",
     windows: {
@@ -85536,7 +85537,7 @@ function installAgent(isTLS, configStr) {
             encoding: "utf8",
         });
         if (isTLS) {
-            downloadPath = yield tool_cache.downloadTool(`https://github.com/step-security/agent-ebpf/releases/download/v1.8.2/harden-runner_1.8.2_linux_${variant}.tar.gz`, undefined, auth);
+            downloadPath = yield tool_cache.downloadTool(`https://github.com/step-security/agent-ebpf/releases/download/v1.8.6/harden-runner_1.8.6_linux_${variant}.tar.gz`, undefined, auth);
         }
         else {
             if (variant === "arm64") {
@@ -85571,7 +85572,7 @@ function installAgentBravo(configStr) {
         const token = lib_core.getInput("token", { required: true });
         const auth = `token ${token}`;
         const variant = process.arch === "x64" ? "amd64" : "arm64";
-        const downloadPath = yield tool_cache.downloadTool(`https://github.com/step-security/agent-ebpf/releases/download/v1.8.2/harden-runner-bravo_1.8.2_linux_${variant}.tar.gz`, undefined, auth);
+        const downloadPath = yield tool_cache.downloadTool(`https://github.com/step-security/agent-ebpf/releases/download/v1.8.6/harden-runner-bravo_1.8.6_linux_${variant}.tar.gz`, undefined, auth);
         if (!verifyChecksum(downloadPath, true, variant, "linux", "bravo")) {
             return false;
         }
@@ -85812,6 +85813,10 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
             console.log(CONTAINER_MESSAGE);
             return;
         }
+        if (isGithubHosted() && process.platform === "linux" && !process.env.USER) {
+            console.log(UBUNTU_SLIM_MESSAGE);
+            return;
+        }
         var correlation_id = v4();
         var api_url = configs_STEPSECURITY_API_URL;
         var web_url = STEPSECURITY_WEB_URL;
@@ -85843,7 +85848,8 @@ var __rest = (undefined && undefined.__rest) || function (s, e) {
         if (confg.use_policy_store) {
             console.log(`Fetching policy from policy store`);
             if (confg.api_key === "") {
-                lib_core.setFailed("api-key is required when use-policy-store is set to true");
+                lib_core.warning("api-key is not set while use-policy-store is true. Defaulting to audit mode.");
+                confg.egress_policy = "audit";
             }
             else {
                 try {
