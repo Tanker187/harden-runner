@@ -1,4 +1,4 @@
-name: "sis1145"
+name: "Harden-Runner"
 description: "Harden-Runner provides runtime security for GitHub-hosted and self-hosted runners"
 inputs:
   allowed-endpoints:
